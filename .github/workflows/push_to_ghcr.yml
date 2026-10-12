@@ -54,12 +54,13 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "${{ matrix.runner }}/uv.lock"
 
-      # uv run cannot be used from a directory containing ':' so call the venv python directly
+      # uv run cannot be used from a directory containing ':' so call the venv python directly.
+      # pytest exits 5 when it collects no tests; a runner without tests should still be pushed
       - name: Run tests
         working-directory: ${{ matrix.runner }}
         run: |
           uv sync --locked
-          .venv/bin/python -m pytest
+          .venv/bin/python -m pytest || [ $? -eq 5 ]
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
