@@ -1,0 +1,3 @@
+This folder is a bulk implementation of HUC12 reference features in Geoconnex. It templates the gpkg from this URL https://www.hydroshare.org/resource/3295a17b4cc24d34bd6a5c5aaf753c50/data/contents/reference_huc12.gpkg contained in this hydroshare resource: https://www.hydroshare.org/resource/3295a17b4cc24d34bd6a5c5aaf753c50/
+
+It should mimic the template logic of this JSON-LD but instead https://github.com/internetofwater/reference.geoconnex.us/blob/main/pygeoapi-skin-dashboard/templates/jsonld/hu12/collections/items/item.jsonld write it as a bulk integration

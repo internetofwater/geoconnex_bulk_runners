@@ -1,0 +1,3 @@
+This repository holds multiple Geoconnex bulk runner implementations. Each folder is its own bulk runner. Each folder should push a public image to Github container registry or Dockerhub upon a push to main that is called `X_bulk_rdf` where `X` is the name of the folder.
+
+Any bulk integration that pulls from a gpkg / csv / jsonld etc. file as its source should not use an intermediate geoparquet cache file. It can just template the source file directly. Sources that require crawling a live API to get data may require a bulk integration to reduce the number of requests and speed up the core JSON-LD crawl time.

@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "geoconnex-submission": {
+      "source": "internetofwater/geoconnex.us",
+      "sourceType": "github",
+      "skillPath": "skills/geoconnex-submission/SKILL.md",
+      "computedHash": "c4fc106ee561c5bec2f86279083361c112bb6db7c3eba0c1c0a99d5068eade5b"
+    }
+  }
+}

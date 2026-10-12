@@ -1,0 +1,85 @@
+# Copyright 2026 Lincoln Institute of Land Policy
+# SPDX-License-Identifier: MIT
+
+name: Test and Push To GHCR
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  discover:
+    name: Find bulk runners
+    runs-on: ubuntu-latest
+    outputs:
+      runners: ${{ steps.find.outputs.runners }}
+    steps:
+      - uses: actions/checkout@v4
+      # Every top level folder with a Dockerfile is a bulk runner
+      - id: find
+        run: |
+          runners=$(ls -d */Dockerfile | xargs -n1 dirname | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          echo "runners=$runners" >> "$GITHUB_OUTPUT"
+
+  test_build_push:
+    name: ${{ matrix.runner }}
+    needs: discover
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: ${{ fromJson(needs.discover.outputs.runners) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Docker image names cannot contain ':' so ref:gages becomes ref_gages_bulk_rdf
+      - name: Derive image name
+        id: image
+        run: |
+          name=$(echo "${{ matrix.runner }}" | tr ':' '_' | tr '[:upper:]' '[:lower:]')
+          echo "name=${name}_bulk_rdf" >> "$GITHUB_OUTPUT"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "${{ matrix.runner }}/uv.lock"
+
+      # uv run cannot be used from a directory containing ':' so call the venv python directly
+      - name: Run tests
+        working-directory: ${{ matrix.runner }}
+        run: |
+          uv sync --locked
+          .venv/bin/python -m pytest
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.runner }}
+          file: ${{ matrix.runner }}/Dockerfile
+          push: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+          tags: ghcr.io/${{ github.repository_owner }}/${{ steps.image.outputs.name }}:latest
+          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          platforms: linux/amd64,linux/arm64
+          cache-from: type=gha,scope=${{ steps.image.outputs.name }}
+          cache-to: type=gha,mode=max,scope=${{ steps.image.outputs.name }}
