@@ -1,0 +1,25 @@
+# Copyright 2026 Lincoln Institute of Land Policy
+# SPDX-License-Identifier: MIT
+
+[project]
+name = "nhdplusv2-huc12-bulk"
+version = "0.1.0"
+description = "Geoconnex bulk JSON-LD export of NHDPlus V2.1 HUC12 outlet (pour) points"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "pyshacl>=0.30.1",
+    "pyright>=1.1.408",
+    "pytest>=8.4.0",
+    "ruff>=0.15.8",
+]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
