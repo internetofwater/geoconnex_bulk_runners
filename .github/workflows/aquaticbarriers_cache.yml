@@ -1,0 +1,49 @@
+# Copyright 2026 Lincoln Institute of Land Policy
+# SPDX-License-Identifier: MIT
+
+name: Export aquaticbarriers Geoparquet
+
+# Re-crawls the aquaticbarriers ESRI FeatureServer and publishes the cache as a new release.
+# aquaticbarriers/src/template.py always reads the newest aquaticbarriers-cache-* release,
+# so no other step is needed after this runs
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  export_geoparquet:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    defaults:
+      run:
+        working-directory: aquaticbarriers
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "aquaticbarriers/uv.lock"
+
+      - name: Sync dependencies
+        run: uv sync --locked
+
+      - name: Crawl FeatureServer to geoparquet
+        run: .venv/bin/python src/crawl.py --out aquaticbarriers.parquet
+
+      # make_latest is off so this runner's caches never become the repo-wide "latest"
+      # release that other runners might rely on
+      - name: Create GitHub Release and upload parquet
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: aquaticbarriers-cache-${{ github.run_id }}
+          name: aquaticbarriers Geoparquet Export ${{ github.run_id }}
+          files: aquaticbarriers/aquaticbarriers.parquet
+          make_latest: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

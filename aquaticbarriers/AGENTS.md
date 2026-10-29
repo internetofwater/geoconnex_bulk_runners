@@ -6,9 +6,11 @@ with ~990k points (dams and surveyed road/stream crossings) that is paged 2000 f
 
 Because harvesting would require ~500 requests against a live ESRI server, `src/crawl.py` caches the
 layer as GeoParquet (all ~250 source columns, WKB point geometry) and `src/template.py` templates
-that cache to newline delimited JSON-LD. The cache is published as the `aquaticbarriers.parquet`
-asset on the `aquaticbarriers-cache` GitHub release of this repo and is the default `--parquet`
-source for the container. To refresh it, run `make crawl` and re-upload the asset.
+that cache to newline delimited JSON-LD. The cache is built by the manually triggered
+`.github/workflows/aquaticbarriers_cache.yml` workflow, which publishes it as the
+`aquaticbarriers.parquet` asset on a new `aquaticbarriers-cache-<run id>` release each run. With no
+`--parquet`, `template.py` looks up the newest such release via the GitHub API (`latest_cache_url`),
+so refreshing the cache is just re-running that workflow.
 
 Each barrier is templated as a hyf:HY_HydroLocation / schema:Place keyed on its `SARPID`
 (`https://geoconnex.us/nacc/barriers/{SARPID}`; the PID base is `PID_BASE` in

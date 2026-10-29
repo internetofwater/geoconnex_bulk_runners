@@ -376,3 +376,38 @@ def test_crawl_pages_through_all_features_and_writes_geoparquet(tmp_path):
 def test_unsupported_field_type_is_rejected():
     with pytest.raises(ValueError):
         crawl.build_schema({"fields": [{"name": "d", "type": "esriFieldTypeDate"}]})
+
+
+def release(
+    tag: str, published_at: str | None, assets=("aquaticbarriers.parquet",), draft=False
+):
+    return {
+        "tag_name": tag,
+        "published_at": published_at,
+        "draft": draft,
+        "assets": [
+            {"name": name, "browser_download_url": f"https://example.com/{tag}/{name}"}
+            for name in assets
+        ],
+    }
+
+
+def test_latest_cache_url_picks_newest_cache_release():
+    releases = [
+        release("other-runner-cache-9", "2026-10-03T00:00:00Z"),
+        release("aquaticbarriers-cache-2", "2026-10-02T00:00:00Z"),
+        release("aquaticbarriers-cache-3", "2026-10-04T00:00:00Z", draft=True),
+        release("aquaticbarriers-cache-4", "2026-10-05T00:00:00Z", assets=()),
+        release("aquaticbarriers-cache-1", "2026-10-01T00:00:00Z"),
+    ]
+    assert (
+        template.latest_cache_url(releases)
+        == "https://example.com/aquaticbarriers-cache-2/aquaticbarriers.parquet"
+    )
+
+
+def test_latest_cache_url_errors_without_a_cache_release():
+    with pytest.raises(RuntimeError):
+        template.latest_cache_url(
+            [release("other-runner-cache-1", "2026-10-01T00:00:00Z")]
+        )

@@ -4,6 +4,9 @@ Geoconnex bulk JSON-LD export of dams and assessed road/stream crossings from th
 [National Aquatic Barrier Prioritization Tool](https://aquaticbarriers.org). See `AGENTS.md` for
 design notes.
 
+The container templates the newest `aquaticbarriers-cache-*` GitHub release. To refresh it, manually
+run the **Export aquaticbarriers Geoparquet** workflow in GitHub Actions.
+
 ```sh
 make deps    # install dependencies
 make test    # run tests

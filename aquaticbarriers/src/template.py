@@ -30,10 +30,14 @@ import shapely
 logging.basicConfig(level=logging.INFO, stream=sys.stderr)
 LOGGER = logging.getLogger(__name__)
 
-DEFAULT_PARQUET = (
-    "https://github.com/internetofwater/geoconnex_bulk_runners/releases/download/"
-    "aquaticbarriers-cache/aquaticbarriers.parquet"
+# The cache is published by the aquaticbarriers_cache workflow as a new release per run,
+# tagged `aquaticbarriers-cache-<run id>`. Other runners in this repo may publish releases
+# too, so the newest cache is found by tag prefix rather than the repo's "latest" release
+RELEASES_API = (
+    "https://api.github.com/repos/internetofwater/geoconnex_bulk_runners/releases"
 )
+CACHE_TAG_PREFIX = "aquaticbarriers-cache-"
+CACHE_ASSET = "aquaticbarriers.parquet"
 
 PID_BASE = "https://geoconnex.us/nacc/barriers"
 
@@ -309,6 +313,32 @@ def row_to_jsonld(row: dict, linkable: frozenset[str] | set[str] = frozenset()) 
     return feature
 
 
+def latest_cache_url(releases: list[dict] | None = None) -> str:
+    """Download URL of the parquet asset on the most recently published cache release"""
+    if releases is None:
+        request = urllib.request.Request(
+            f"{RELEASES_API}?per_page=100",
+            headers={"Accept": "application/vnd.github+json"},
+        )
+        with urllib.request.urlopen(request, timeout=60) as response:
+            releases = json.load(response)
+    candidates = [
+        (release["published_at"], asset["browser_download_url"])
+        for release in releases
+        if release["tag_name"].startswith(CACHE_TAG_PREFIX)
+        and not release["draft"]
+        and release["published_at"]
+        for asset in release["assets"]
+        if asset["name"] == CACHE_ASSET
+    ]
+    if not candidates:
+        raise RuntimeError(
+            f"No {CACHE_TAG_PREFIX}* release with a {CACHE_ASSET} asset was found; "
+            "run the aquaticbarriers_cache workflow first"
+        )
+    return max(candidates)[1]
+
+
 def download(url: str, destination: Path, attempts: int = 3) -> None:
     for attempt in range(1, attempts + 1):
         try:
@@ -353,9 +383,11 @@ def linkable_ids(path: Path) -> frozenset[str]:
     )
 
 
-def main(location: str) -> None:
+def main(location: str | None = None) -> None:
     seen: set[str] = set()
     written = 0
+    if location is None:
+        location = latest_cache_url()
     with local_parquet(location) as path:
         linkable = linkable_ids(path)
         for row in iter_rows(path):
@@ -380,8 +412,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--parquet",
-        default=DEFAULT_PARQUET,
-        help="Path or URL of the aquaticbarriers GeoParquet cache produced by crawl.py",
+        help="Path or URL of the aquaticbarriers GeoParquet cache produced by crawl.py "
+        "(defaults to the newest cache release of this repo)",
     )
     args = parser.parse_args()
     main(args.parquet)

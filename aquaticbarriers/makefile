@@ -8,7 +8,7 @@ test:
 	.venv/bin/python -m pytest
 
 # Re-crawl the live ESRI FeatureServer into a geoparquet cache (about 500 requests).
-# Upload the result to the `aquaticbarriers-cache` GitHub release afterwards
+# The published cache is built by the aquaticbarriers_cache GitHub workflow instead
 crawl:
 	.venv/bin/python src/crawl.py --out $(PARQUET)
 
