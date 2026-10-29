@@ -1,0 +1,144 @@
+{
+  "@context": {
+    "schema": "https://schema.org/",
+    "gsp": "http://www.opengis.net/ont/geosparql#",
+    "hyf": "https://www.opengis.net/def/schema/hy_features/hyf/"
+  },
+  "@id": "https://geoconnex.us/nacc/barriers/AK1111",
+  "@type": [
+    "hyf:HY_HydroLocation",
+    "schema:Place"
+  ],
+  "schema:name": "Sand Pit Dam",
+  "hyf:HydroLocationType": "dam",
+  "schema:description": "Dam AK1111 in Juneau City and Borough, Alaska.",
+  "hyf:containingCatchment": [
+    {
+      "@id": "https://geoconnex.us/ref/huc12/190102040802"
+    },
+    {
+      "@id": "https://geoconnex.us/ref/hu10/1901020408"
+    },
+    {
+      "@id": "https://geoconnex.us/ref/hu08/19010204"
+    },
+    {
+      "@id": "https://geoconnex.us/ref/hu06/190102"
+    },
+    {
+      "@id": "https://geoconnex.us/ref/hu04/1901"
+    },
+    {
+      "@id": "https://geoconnex.us/ref/hu02/19"
+    }
+  ],
+  "schema:identifier": [
+    {
+      "@type": "schema:PropertyValue",
+      "schema:propertyID": "SARPID",
+      "schema:value": "AK1111"
+    },
+    {
+      "@type": "schema:PropertyValue",
+      "schema:propertyID": "National Inventory of Dams ID",
+      "schema:value": "AK00317"
+    }
+  ],
+  "schema:subjectOf": {
+    "@type": "schema:Dataset",
+    "schema:name": "National Aquatic Barrier Prioritization: dams and assessed road/stream crossings",
+    "schema:url": "https://tool.aquaticbarriers.org/report/combined_barriers/AK1111",
+    "schema:provider": {
+      "@type": "schema:Organization",
+      "schema:name": "Southeast Aquatic Resources Partnership",
+      "schema:url": "https://southeastaquatics.net/"
+    }
+  },
+  "schema:additionalProperty": [
+    {
+      "@type": "schema:PropertyValue",
+      "schema:name": "Source",
+      "schema:value": "NID March19 2023",
+      "schema:description": "Dataset the barrier record was compiled from"
+    },
+    {
+      "@type": "schema:PropertyValue",
+      "schema:name": "SourceID",
+      "schema:value": "AK00317",
+      "schema:description": "Identifier of the barrier within its source dataset"
+    },
+    {
+      "@type": "schema:PropertyValue",
+      "schema:name": "YearCompleted",
+      "schema:value": 2016,
+      "schema:description": "Year the dam was completed"
+    },
+    {
+      "@type": "schema:PropertyValue",
+      "schema:name": "Height",
+      "schema:value": 33,
+      "schema:description": "Height of the dam"
+    },
+    {
+      "@type": "schema:PropertyValue",
+      "schema:name": "Hazard",
+      "schema:value": "Low",
+      "schema:description": "Hazard potential classification of the dam"
+    },
+    {
+      "@type": "schema:PropertyValue",
+      "schema:name": "Construction",
+      "schema:value": "Earthfill (Gravel, Sand, Silt, Clay)",
+      "schema:description": "Construction type of the dam"
+    },
+    {
+      "@type": "schema:PropertyValue",
+      "schema:name": "Purpose",
+      "schema:value": "Flood Control",
+      "schema:description": "Primary purpose of the dam"
+    },
+    {
+      "@type": "schema:PropertyValue",
+      "schema:name": "Condition",
+      "schema:value": "Fair",
+      "schema:description": "Assessed condition of the barrier"
+    },
+    {
+      "@type": "schema:PropertyValue",
+      "schema:name": "LowheadDam",
+      "schema:value": "Unknown",
+      "schema:description": "Whether the dam is a lowhead dam"
+    },
+    {
+      "@type": "schema:PropertyValue",
+      "schema:name": "Passability",
+      "schema:value": "Unknown",
+      "schema:description": "Assessed fish passability of the barrier"
+    },
+    {
+      "@type": "schema:PropertyValue",
+      "schema:name": "Removed",
+      "schema:value": "no",
+      "schema:description": "Whether the barrier has been removed"
+    },
+    {
+      "@type": "schema:PropertyValue",
+      "schema:name": "State",
+      "schema:value": "Alaska",
+      "schema:description": "State the barrier is located in"
+    },
+    {
+      "@type": "schema:PropertyValue",
+      "schema:name": "County",
+      "schema:value": "Juneau City and Borough",
+      "schema:description": "County the barrier is located in"
+    }
+  ],
+  "gsp:hasGeometry": {
+    "@type": "http://www.opengis.net/ont/sf#Point",
+    "gsp:asWKT": {
+      "@type": "http://www.opengis.net/ont/geosparql#wktLiteral",
+      "@value": "POINT (-134.753646851 58.144245148)"
+    }
+  }
+}
